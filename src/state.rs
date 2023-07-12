@@ -1,5 +1,6 @@
 use cosmwasm_schema::cw_serde;
-use cw_storage_plus::Map;
+use cosmwasm_std::Addr;
+use cw_storage_plus::{Map, Item};
 
 #[cw_serde]
 #[derive(Default)]
@@ -12,5 +13,28 @@ pub struct State {
   pub latest_message: Option<String>,
 }
 
+#[cw_serde]
+pub struct Config {
+  pub admin_address: Addr,
+}
+
+#[cw_serde]
+pub struct Poll {
+  pub one_option: String,
+  pub two_option: String,
+  pub three_option: String,
+  pub one_votes: u64,
+  pub two_votes: u64,
+  pub three_votes: u64,
+  pub active_poll: bool,
+  pub ibc_success: bool,
+}
+
 // map with channel_id as key and State as value
 pub const CHANNEL_STATE: Map<String, State> = Map::new("channel_state");
+
+pub const CONFIG: Item<Config> = Item::new("config");
+
+pub const POLLS: Map<u8,Poll> = Map::new("polls");
+
+pub const NEXT_ID : Item<u8> =Item::new("next_id"); 
