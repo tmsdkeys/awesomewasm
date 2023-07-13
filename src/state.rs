@@ -30,6 +30,12 @@ pub struct Poll {
   pub ibc_success: bool,
 }
 
+#[cw_serde]
+pub struct PacketData {
+  pub poll_id: u8,
+  pub voted_address: String,
+}
+
 // map with channel_id as key and State as value
 pub const CHANNEL_STATE: Map<String, State> = Map::new("channel_state");
 
