@@ -8,7 +8,7 @@ use cw2::set_contract_version;
 
 use crate::error::ContractError;
 use crate::msg::{InstantiateMsg, ExecuteMsg, IbcExecuteMsg, QueryMsg, GetStateResponse, GetPollResponse};
-use crate::state::{State, CHANNEL_STATE, CONFIG, Config, POLLS, Poll, NEXT_ID};
+use crate::state::{State, CHANNEL_STATE, CONFIG, Config, POLLS, Poll, PacketData, NEXT_ID};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:ibc-poll-messenger";
@@ -46,6 +46,7 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
   match msg {
     ExecuteMsg::SendMessage { channel, message} => execute::try_send_message(deps, env, channel, message),
+    ExecuteMsg::SendPollResult { channel, poll_id, voted_option } => execute::try_send_poll_result(deps, env, channel, poll_id, voted_option),
     ExecuteMsg::CreatePoll { one_option, two_option, three_option } => execute::execute_create_poll(deps, env, info, one_option, two_option, three_option),
     ExecuteMsg::Vote { poll_id, choice } => execute::execute_vote(deps, env, info, poll_id, choice),
     ExecuteMsg::EndPoll { poll_id } => execute::execute_end_poll(deps, env, info, poll_id),
@@ -80,6 +81,23 @@ use super::*;
         None => Err(ContractError::NoState {}),
       }
     })
+  }
+
+  pub fn try_send_poll_result(_deps: DepsMut, env: Env, channel: String, poll_id: u8 , voted_option: String) -> Result<Response, ContractError> {
+    let packet_data = PacketData {
+      poll_id,
+      voted_option,
+    };
+
+    Ok(Response::new()
+      .add_attribute("action", "send_message")
+      .add_attribute("channel_id", channel.clone())
+      // outbound IBC message, where packet is then received on other chain
+      .add_message(IbcMsg::SendPacket {
+        channel_id: channel,
+        data: to_binary(&packet_data)?,
+        timeout: IbcTimeout::with_timestamp(env.block.time.plus_seconds(300)),
+      }))
   }
 
   pub fn execute_create_poll(
