@@ -33,7 +33,7 @@ pub struct Poll {
 #[cw_serde]
 pub struct PacketData {
   pub poll_id: u8,
-  pub voted_address: String,
+  pub voted_option: String,
 }
 
 // map with channel_id as key and State as value
