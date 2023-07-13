@@ -7,7 +7,7 @@ use cosmwasm_std::{
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{InstantiateMsg, ExecuteMsg, IbcExecuteMsg, QueryMsg, GetStateResponse, GetPollResponse};
+use crate::msg::{InstantiateMsg, ExecuteMsg, QueryMsg, GetStateResponse, GetPollResponse};
 use crate::state::{State, CHANNEL_STATE, CONFIG, Config, POLLS, Poll, PacketData, NEXT_ID};
 
 // version info for migration info
