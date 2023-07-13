@@ -6,7 +6,7 @@ pub struct InstantiateMsg {}
 
 #[cw_serde]
 pub enum ExecuteMsg {
-  SendMessage { channel: String, message: String },
+  // SendMessage { channel: String, message: String },
   SendPollResult { channel: String, poll_id: u8, voted_option: String },
   CreatePoll { one_option: String, two_option: String, three_option: String },
   Vote { poll_id: u8, choice: String},

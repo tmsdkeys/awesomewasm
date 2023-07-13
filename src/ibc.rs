@@ -12,10 +12,10 @@ use crate::{
   error::Never,
   msg::IbcExecuteMsg,
   ContractError,
-  state::{State, CHANNEL_STATE},
+  state::{State, PacketData, CHANNEL_STATE, POLLS},
 };
 
-pub const IBC_VERSION: &str = "messenger-1";
+pub const IBC_VERSION: &str = "poll-messenger-1";
 
 /// Handles the `OpenInit` and `OpenTry` parts of the IBC handshake
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -108,15 +108,16 @@ pub fn ibc_packet_ack(
 ) -> Result<IbcBasicResponse, ContractError> {
   // load channel state
   let channel = ack.original_packet.src.channel_id.clone();
-  let mut state = CHANNEL_STATE.load(deps.storage, channel.clone())?;
+  let packet_data: PacketData = from_binary(&ack.original_packet.data)?;
+  let mut poll = POLLS.load(deps.storage, packet_data.poll_id.clone())?;
 
   // check acknowledgement data
   let acknowledgement: Ack = from_binary(&ack.acknowledgement.data)?;
   match acknowledgement {
     // for a success ack we increment the count of sent messages and save state
-    Ack::Result(_) => {            
-        state.count_sent += 1;
-        CHANNEL_STATE.save(deps.storage, channel.clone(), &state)?;
+    Ack::Result(_) => { 
+      poll.ibc_success = true;           
+      POLLS.save(deps.storage,packet_data.poll_id.clone(), &poll)?;
     },
     // for an error ack we don't do anything and let the count of sent messages as it was
     Ack::Error(_) => {},
@@ -125,7 +126,8 @@ pub fn ibc_packet_ack(
   Ok(IbcBasicResponse::new()
     .add_attribute("action", "acknowledge")
     .add_attribute("channel_id", channel.clone())
-    .add_attribute("count_sent", state.count_sent.to_string()))
+    .add_attribute("poll_id", packet_data.poll_id.clone().to_string())
+  )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

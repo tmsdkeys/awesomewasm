@@ -45,7 +45,7 @@ pub fn execute(
   msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
   match msg {
-    ExecuteMsg::SendMessage { channel, message} => execute::try_send_message(deps, env, channel, message),
+    // ExecuteMsg::SendMessage { channel, message} => execute::try_send_message(deps, env, channel, message),
     ExecuteMsg::SendPollResult { channel, poll_id, voted_option } => execute::try_send_poll_result(deps, env, channel, poll_id, voted_option),
     ExecuteMsg::CreatePoll { one_option, two_option, three_option } => execute::execute_create_poll(deps, env, info, one_option, two_option, three_option),
     ExecuteMsg::Vote { poll_id, choice } => execute::execute_vote(deps, env, info, poll_id, choice),
@@ -57,17 +57,17 @@ pub mod execute {
 
 use super::*;
 
-  pub fn try_send_message(_deps: DepsMut, env: Env, channel: String, message: String) -> Result<Response, ContractError> {
-    Ok(Response::new()
-      .add_attribute("action", "send_message")
-      .add_attribute("channel_id", channel.clone())
-      // outbound IBC message, where packet is then received on other chain
-      .add_message(IbcMsg::SendPacket {
-        channel_id: channel,
-        data: to_binary(&IbcExecuteMsg::Message { message })?,
-        timeout: IbcTimeout::with_timestamp(env.block.time.plus_seconds(300)),
-      }))
-  }
+  // pub fn try_send_message(_deps: DepsMut, env: Env, channel: String, message: String) -> Result<Response, ContractError> {
+  //   Ok(Response::new()
+  //     .add_attribute("action", "send_message")
+  //     .add_attribute("channel_id", channel.clone())
+  //     // outbound IBC message, where packet is then received on other chain
+  //     .add_message(IbcMsg::SendPacket {
+  //       channel_id: channel,
+  //       data: to_binary(&IbcExecuteMsg::Message { message })?,
+  //       timeout: IbcTimeout::with_timestamp(env.block.time.plus_seconds(300)),
+  //     }))
+  // }
 
   /// Called on IBC packet receive in other chain
   pub fn try_receive_message(deps: DepsMut, channel: String, message: String) -> Result<State, ContractError> {
