@@ -8,7 +8,11 @@ This repo was created to support the workshop at the AwesomeWasm conference July
 - Polymer, through _virtual IBC_ accelerates IBC extensibility and thus adoption. Check out [this workshop at Gateway to Cosmos](https://www.youtube.com/watch?v=4vLGwzjRaJ8) to find out more.
 - IBC SDK is multichain development tooling aimed to streamline the development of IBC applications (Cosmos SDK modules, contracts,...): it was initially developed with using Polymer as a middle hop in multi-hop IBC in mind. However, integration with [Starship](https://github.com/cosmology-tech/starship/tree/main) expands the reach of both.
 
-Polymer will launch with support between Ethereum and Cosmos (including CosmWasm) chains. This opens up the design space for IBC app developers to enable cross-chain applications between CW and EVM contracts.
+[Polymer](https://polymerlabs.org) will launch with support between Ethereum and Cosmos (including CosmWasm) chains. This opens up the design space for IBC app developers to enable cross-chain applications between CW and EVM contracts.
+
+From xDapp developers point of view...
+
+![IBC SDK](28-1.jpg)
 
 In this workshop, we'll prep for that by looking at how to create a simple polling (voting) contract that allows to create polls, vote on polls and when the poll is ended we can send an IBC packet with the voting information to then be used by other applications on a different chain.
 
